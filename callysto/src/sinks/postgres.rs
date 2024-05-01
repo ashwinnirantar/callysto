@@ -91,14 +91,17 @@ where
         let client = Arc::new(pgpool);
         let data_sink = nuclei::spawn(async move {
             while let Ok(item) = rx.recv() {
-                let mut client = inner_client.get().await.unwrap();
+                let mut client = inner_client.get().await.unwrap_or_else(|err| {
+                    error!("Error preparing client: {}", err)});
                 let stmt = client
                     .prepare_cached(&item.query)
                     .await
-                    .unwrap();
+                    .unwrap_or_else(|err| {
+                        error!("Error preparing statement: {}", err)});
                 let rows = client
                     .query_raw(&stmt, &item.args)
-                    .await.unwrap();
+                    .await.unwrap_or_else(|err| {
+                        error!("Error while querying: {}", err)});
                 info!("CPostgresSink - Ingestion status:");
             }
         });
