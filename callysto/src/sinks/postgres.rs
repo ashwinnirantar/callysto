@@ -18,7 +18,7 @@ use std::pin::Pin;
 use std::str::FromStr;
 use std::task::{Context, Poll};
 use std::vec::Drain;
-use tracing::{debug, trace, warn};
+use tracing::{debug, trace, warn, info};
 use url::Url;
 
 #[derive(Debug)]
