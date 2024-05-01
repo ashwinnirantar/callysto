@@ -18,7 +18,7 @@ use std::pin::Pin;
 use std::str::FromStr;
 use std::task::{Context, Poll};
 use std::vec::Drain;
-use tracing::{debug, trace, warn, info};
+use tracing::{debug, trace, warn, info, error};
 use url::Url;
 
 #[derive(Debug)]
@@ -100,14 +100,12 @@ where
                     .unwrap_or_else(|e| {
                         error!("{:?}", e);
                     });
-                info!("statement: {:?}", stmt);
                 let rows = client
                     .query_raw(&stmt, &item.args)
                     .await
                     .unwrap_or_else(|e| {
                         error!("{:?}", e);
                     });
-                info!("rows: {:?}", rows);
                 info!("CPostgresSink - Ingestion status:");
             }
         });
