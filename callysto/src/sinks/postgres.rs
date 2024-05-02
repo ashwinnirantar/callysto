@@ -102,8 +102,17 @@ where
                 info!("prepared statement");
                 let rows = client
                     .query_raw(&stmt, &item.args)
-                    .await.unwrap_or_else(|err| {
-                        panic!("Error while querying: {}", err)});
+                    .await;
+                match rows {
+                    Ok(rows) => {
+                        while let Some(row_result) = rows.try_next().await.unwrap() {
+                            println!("Row: {:?}", row_result);
+                        }
+                    }
+                    Err(err) => {
+                        panic!("Error while querying: {}", err);
+                    }
+                }
                 info!("querying row");
                 info!("CPostgresSink - Ingestion status:");
             }
