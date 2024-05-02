@@ -93,15 +93,18 @@ where
             while let Ok(item) = rx.recv() {
                 let mut client = inner_client.get().await.unwrap_or_else(|err| {
                     panic!("Error preparing client: {}", err)});
+                info!("prepared client");
                 let stmt = client
                     .prepare_cached(&item.query)
                     .await
                     .unwrap_or_else(|err| {
                         panic!("Error preparing statement: {}", err)});
+                info!("prepared statement");
                 let rows = client
                     .query_raw(&stmt, &item.args)
                     .await.unwrap_or_else(|err| {
                         panic!("Error while querying: {}", err)});
+                info!("querying row");
                 info!("CPostgresSink - Ingestion status:");
             }
         });
