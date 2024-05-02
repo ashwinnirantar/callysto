@@ -105,9 +105,7 @@ where
                     .await;
                 match rows {
                     Ok(rows) => {
-                        while let Some(row_result) = rows.try_next().await.unwrap() {
-                            println!("Row: {:?}", row_result);
-                        }
+                            println!("Rows ok");
                     }
                     Err(err) => {
                         panic!("Error while querying: {}", err);
