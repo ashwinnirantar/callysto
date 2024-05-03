@@ -84,7 +84,7 @@ where
                 })
         });
 
-        info!("using clone version of postgres library sink");
+        info!("using clone version of postgres library sink v1.5");
 
         let (tx, rx) = crossbeam_channel::unbounded::<CPostgresRow<T>>();
         let (tx, rx) = (ArchPadding::new(tx), ArchPadding::new(rx));
