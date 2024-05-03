@@ -79,7 +79,9 @@ where
         let pgpool = nuclei::block_on(async move {
             Self::setup_pg(&pg_dsn.into(), false, pool_size)
                 .await
-                .unwrap()
+                .unwrap_or_else(|err| {
+                    panic!("Error connecting to the database: {}", err)
+                })
         });
 
         info!("using clone version of postgres library sink");
