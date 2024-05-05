@@ -93,7 +93,9 @@ where
         let client = Arc::new(pgpool);
         let data_sink = nuclei::spawn(async move {
             info!("connected to the database successfully");
+            let mut loop_entered = false; // Flag to track if the loop is entered
             while let Ok(item) = rx.recv() {
+                loop_entered = true; // Set the flag to true when the loop is entered
                 let mut client = inner_client.get().await.unwrap_or_else(|err| {
                     panic!("Error preparing client: {}", err)});
                 info!("prepared client");
@@ -110,7 +112,11 @@ where
                 info!("querying row");
                 info!("CPostgresSink - Ingestion status:");
             }
+            if !loop_entered {
+                info!("The while loop was not entered");
+            }
         });
+        
 
         Ok(Self {
             client,
