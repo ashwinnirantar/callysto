@@ -82,7 +82,6 @@ where
                 .unwrap_or_else(|err| {
                     panic!("Error connecting to the database: {}", err)
                 });
-                info!("connected to the database successfully");
         });
 
         info!("using clone version of postgres library sink v1.5");
@@ -94,6 +93,7 @@ where
         let client = Arc::new(pgpool);
         let data_sink = nuclei::spawn(async move {
             while let Ok(item) = rx.recv() {
+                info!("connected to the database successfully");
                 let mut client = inner_client.get().await.unwrap_or_else(|err| {
                     panic!("Error preparing client: {}", err)});
                 info!("prepared client");
@@ -102,7 +102,7 @@ where
                     .await
                     .unwrap_or_else(|err| {
                         panic!("Error preparing statement: {}", err)});
-                info!("prepared statement");
+                info!("prepared statement {:?}", stmt);
                 let rows = client
                     .query_raw(&stmt, &item.args)
                     .await.unwrap_or_else(|err| {
