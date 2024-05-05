@@ -114,6 +114,8 @@ where
             }
             if !loop_entered {
                 info!("The while loop was not entered");
+            } else {
+                info!("while loop was entered")
             }
         });
         
