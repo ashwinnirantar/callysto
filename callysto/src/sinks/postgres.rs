@@ -102,7 +102,7 @@ where
                     .await
                     .unwrap_or_else(|err| {
                         panic!("Error preparing statement: {}", err)});
-                info!("prepared statement {:?}", stmt);
+                info!("prepared statement");
                 let rows = client
                     .query_raw(&stmt, &item.args)
                     .await.unwrap_or_else(|err| {
