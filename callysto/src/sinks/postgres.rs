@@ -92,8 +92,8 @@ where
         let inner_client = pgpool.clone();
         let client = Arc::new(pgpool);
         let data_sink = nuclei::spawn(async move {
+            info!("connected to the database successfully");
             while let Ok(item) = rx.recv() {
-                info!("connected to the database successfully");
                 let mut client = inner_client.get().await.unwrap_or_else(|err| {
                     panic!("Error preparing client: {}", err)});
                 info!("prepared client");
