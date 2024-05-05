@@ -82,7 +82,7 @@ where
                 .unwrap_or_else(|err| {
                     panic!("Error connecting to the database: {}", err)
                 });
-                info!("connected to the database successfully {:?}", pg_dsn);
+                info!("connected to the database successfully");
         });
 
         info!("using clone version of postgres library sink v1.5");
