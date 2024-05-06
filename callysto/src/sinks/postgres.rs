@@ -68,10 +68,16 @@ where
             deadpool_postgres::tokio_postgres::NoTls,
             mgr_config,
         );
+
+        info!("attempting database connection");
+
         let pool = Pool::builder(mgr)
             .max_size(pool_size)
             .build()
-            .map_err(|e| CallystoError::GeneralError(e.to_string()))?;
+            .unwrap_or_else(|e| CallystoError::GeneralError(e.to_string()))?;
+
+        info!("no error in creating a connection pool to the database");
+
         Ok(pool)
     }
 
@@ -90,7 +96,11 @@ where
         let (tx, rx) = (ArchPadding::new(tx), ArchPadding::new(rx));
 
         let inner_client = pgpool.clone();
+        info!("cloned pgpool successfully");
+
         let client = Arc::new(pgpool);
+        info!("created pointer to pgpool");
+
         let data_sink = nuclei::spawn(async move {
             info!("connected to the database successfully");
             let mut loop_entered = false; // Flag to track if the loop is entered
