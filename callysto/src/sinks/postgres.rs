@@ -102,7 +102,7 @@ where
         info!("created pointer to pgpool");
 
         let data_sink = nuclei::spawn(async move {
-            info!("connected to the database successfully");
+            info!("creating a new nuclei spawn");
             let mut loop_entered = false; // Flag to track if the loop is entered
             while let Ok(item) = rx.recv() {
                 loop_entered = true; // Set the flag to true when the loop is entered
