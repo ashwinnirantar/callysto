@@ -18,7 +18,7 @@ use std::pin::Pin;
 use std::str::FromStr;
 use std::task::{Context, Poll};
 use std::vec::Drain;
-use tracing::{debug, trace, warn, info, error};
+use tracing::{debug, error, info, trace, warn};
 use url::Url;
 
 #[derive(Debug)]
@@ -71,10 +71,12 @@ where
 
         info!("attempting database connection");
 
-        let pool = Pool::builder(mgr)
-            .max_size(pool_size)
-            .build()
-            .unwrap_or_else(|e| CallystoError::GeneralError(e.to_string()))?;
+        let pool_result = Pool::builder(mgr).max_size(pool_size).build();
+
+        let pool = match pool_result {
+            Ok(pool) => pool,
+            Err(e) => return Err(CallystoError::GeneralError(e.to_string())),
+        };
 
         info!("no error in creating a connection pool to the database");
 
@@ -85,9 +87,7 @@ where
         let pgpool = nuclei::block_on(async move {
             Self::setup_pg(&pg_dsn.into(), false, pool_size)
                 .await
-                .unwrap_or_else(|err| {
-                    panic!("Error connecting to the database: {}", err)
-                })
+                .unwrap_or_else(|err| panic!("Error connecting to the database: {}", err))
         });
 
         info!("using clone version of postgres library sink v1.5");
@@ -106,19 +106,20 @@ where
             let mut loop_entered = false; // Flag to track if the loop is entered
             while let Ok(item) = rx.recv() {
                 loop_entered = true; // Set the flag to true when the loop is entered
-                let mut client = inner_client.get().await.unwrap_or_else(|err| {
-                    panic!("Error preparing client: {}", err)});
+                let mut client = inner_client
+                    .get()
+                    .await
+                    .unwrap_or_else(|err| panic!("Error preparing client: {}", err));
                 info!("prepared client");
                 let stmt = client
                     .prepare_cached(&item.query)
                     .await
-                    .unwrap_or_else(|err| {
-                        panic!("Error preparing statement: {}", err)});
+                    .unwrap_or_else(|err| panic!("Error preparing statement: {}", err));
                 info!("prepared statement");
                 let rows = client
                     .query_raw(&stmt, &item.args)
-                    .await.unwrap_or_else(|err| {
-                        panic!("Error executing statement: {}", err)});
+                    .await
+                    .unwrap_or_else(|err| panic!("Error executing statement: {}", err));
                 info!("querying row");
                 info!("CPostgresSink - Ingestion status:");
             }
@@ -128,7 +129,6 @@ where
                 info!("while loop was entered")
             }
         });
-        
 
         Ok(Self {
             client,
