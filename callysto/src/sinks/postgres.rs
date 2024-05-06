@@ -90,7 +90,7 @@ where
                 .unwrap_or_else(|err| panic!("Error connecting to the database: {}", err))
         });
 
-        info!("using clone version of postgres library sink v1.5");
+        info!("using clone version of postgres library sink v1.9.5");
 
         let (tx, rx) = crossbeam_channel::unbounded::<CPostgresRow<T>>();
         let (tx, rx) = (ArchPadding::new(tx), ArchPadding::new(rx));
