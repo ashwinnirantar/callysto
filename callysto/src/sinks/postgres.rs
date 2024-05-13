@@ -48,7 +48,7 @@ pin_project! {
         tx: ArchPadding<Sender<CPostgresRow<T>>>,
         buffer_size: usize,
         #[pin]
-        data_sink: Task<()>
+        data_sink: JoinHandle<()>
     }
 }
 
