@@ -101,7 +101,7 @@ where
         let client = Arc::new(pgpool);
         info!("created pointer to pgpool");
 
-        let data_sink = nuclei::tokio::spawn(async move {
+        let data_sink = nuclei::spawn(async move {
             match nuclei::spawn_more_threads(1).await {
                 Ok(_) => {}
                 Err(_) => {} //log max thread issues?
