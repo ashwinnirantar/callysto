@@ -90,7 +90,7 @@ where
                 .unwrap_or_else(|err| panic!("Error connecting to the database: {}", err))
         });
 
-        info!("using clone version of postgres library sink v1.9.6");
+        info!("using clone version of postgres library sink v1.10.2");
 
         let (tx, rx) = crossbeam_channel::unbounded::<CPostgresRow<T>>();
         let (tx, rx) = (ArchPadding::new(tx), ArchPadding::new(rx));
@@ -102,10 +102,6 @@ where
         info!("created pointer to pgpool");
 
         let data_sink = nuclei::spawn(async move {
-            match nuclei::spawn_more_threads(1).await {
-                Ok(_) => {}
-                Err(_) => {} //log max thread issues?
-            };
             info!("creating a new nuclei spawn");
             let mut loop_entered = false; // Flag to track if the loop is entered
             while let Ok(item) = rx.recv() {
@@ -132,7 +128,7 @@ where
             } else {
                 info!("while loop was entered")
             }
-        });
+        }).ok_or_else(|| CallystoError::GeneralError("hahaha error".into()));
 
         Ok(Self {
             client,
