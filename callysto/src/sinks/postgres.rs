@@ -102,6 +102,10 @@ where
         info!("created pointer to pgpool");
 
         let data_sink = nuclei::tokio::spawn(async move {
+            match nuclei::spawn_more_threads(1).await {
+                Ok(_) => {}
+                Err(_) => {} //log max thread issues?
+            };
             info!("creating a new nuclei spawn");
             let mut loop_entered = false; // Flag to track if the loop is entered
             while let Ok(item) = rx.recv() {
