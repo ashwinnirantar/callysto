@@ -132,7 +132,7 @@ where
             } else {
                 info!("while loop was entered")
             }
-        }).awa;
+        });
 
         Ok(Self {
             client,
