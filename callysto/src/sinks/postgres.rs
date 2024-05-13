@@ -48,7 +48,7 @@ pin_project! {
         tx: ArchPadding<Sender<CPostgresRow<T>>>,
         buffer_size: usize,
         #[pin]
-        data_sink: JoinHandle<()>
+        data_sink: Task<()>
     }
 }
 
@@ -101,7 +101,7 @@ where
         let client = Arc::new(pgpool);
         info!("created pointer to pgpool");
 
-        let data_sink = tokio::spawn(async move {
+        let data_sink = nuclei::tokio::spawn(async move {
             info!("creating a new nuclei spawn");
             let mut loop_entered = false; // Flag to track if the loop is entered
             while let Ok(item) = rx.recv() {
